@@ -1,0 +1,23 @@
+{
+    "name": "otasoft-core",
+    "version": "0.0.1",
+    "description": "Core OTA ecosystem consisting of an api gateway and microservices",
+    "scripts": {
+      "install": "./scripts/install.sh",
+      "build": "./scripts/build.sh",
+      "docker:build": "docker-compose build",
+      "docker:start": "docker-compose up",
+      "docker:teardown": "docker-compose down",
+      "start": "npm run install && npm run lint && npm run build && npm run docker:build && npm run docker:start"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:otasoft/otasoft-core.git"
+    },
+    "author": "Jakub Andrzejewski <jakub.andrzejewski.dev@gmail.com> (https://github.com/Baroshem)",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/otasoft/otasoft-core/issues"
+    },
+    "homepage": "https://github.com/otasoft"
+  }
