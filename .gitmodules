@@ -1,0 +1,15 @@
+[submodule "api-gateway/otasoft-api"]
+	path = api-gateway/otasoft-api
+	url = git@github.com:otasoft/otasoft-api.git
+[submodule "microservices/otasoft-auth"]
+	path = microservices/otasoft-auth
+	url = git@github.com:otasoft/otasoft-auth.git
+[submodule "microservices/otasoft-mail"]
+	path = microservices/otasoft-mail
+	url = git@github.com:otasoft/otasoft-mail.git
+[submodule "microservices/otasoft-customer"]
+	path = microservices/otasoft-customer
+	url = git@github.com:otasoft/otasoft-customer.git
+[submodule "microservices/otasoft-booking"]
+	path = microservices/otasoft-booking
+	url = git@github.com:otasoft/otasoft-booking.git
