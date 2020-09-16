@@ -1,0 +1,206 @@
+version: "3"
+
+services:
+  otasoft-auth:
+    image: "otasoft-auth:dev"
+    container_name: "otasoft-auth"
+    build:
+      context: "./microservices/otasoft-auth"
+    networks:
+      - "frontend"
+      - "backend"
+      - "authdomain"
+    expose:
+      - "5673"
+    depends_on:
+      - "auth-db"
+    environment: 
+      DB_HOST: "auth-db"
+      DB_PORT: ${AUTH_POSTGRES_PORT}
+      DB_USERNAME: ${AUTH_POSTGRES_USERNAME}
+      DB_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      DB_DATABASE: ${AUTH_POSTGRES_DATABASE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      JWT_SECRET: ${AUTH_JWT_SECRET}
+      JWT_EXPIRATION_TIME: ${AUTH_JWT_EXPIRATION_TIME}
+    restart: "on-failure"
+
+  otasoft-booking:
+    image: "otasoft-booking:dev"
+    container_name: "otasoft-booking"
+    build:
+      context: "./microservices/otasoft-booking"
+    networks:
+      - "frontend"
+      - "backend"
+      - "bookingdomain"
+    expose:
+      - "5673"
+    depends_on:
+      - "booking-db"
+    environment: 
+      DB_HOST: "booking-db"
+      DB_PORT: ${BOOKING_POSTGRES_PORT}
+      DB_USERNAME: ${BOOKING_POSTGRES_USERNAME}
+      DB_PASSWORD: ${BOOKING_POSTGRES_PASSWORD}
+      DB_DATABASE: ${BOOKING_POSTGRES_DATABASE}
+    restart: "on-failure"
+
+  otasoft-customer:
+    image: "otasoft-customer:dev"
+    container_name: "otasoft-customer"
+    build:
+      context: "./microservices/otasoft-customer"
+    networks:
+      - "frontend"
+      - "backend"
+      - "customerdomain"
+    expose:
+      - "5673"
+    depends_on:
+      - "customer-db"
+    environment: 
+      DB_HOST: "customer-db"
+      DB_PORT: ${CUSTOMER_POSTGRES_PORT}
+      DB_USERNAME: ${CUSTOMER_POSTGRES_USERNAME}
+      DB_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
+      DB_DATABASE: ${CUSTOMER_POSTGRES_DATABASE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+    restart: "on-failure"
+
+  otasoft-mail:
+    image: "otasoft-mail:dev"
+    container_name: "otasoft-mail"
+    build:
+      context: "./microservices/otasoft-mail"
+    networks:
+      - "frontend"
+      - "backend"
+      - "maildomain"
+    expose:
+      - "5673"
+    depends_on:
+      - "mail-db"
+    environment: 
+      DB_HOST: "mail-db"
+      DB_PORT: ${MAIL_POSTGRES_PORT}
+      DB_USERNAME: ${MAIL_POSTGRES_USERNAME}
+      DB_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
+      DB_DATABASE: ${MAIL_POSTGRES_DATABASE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      SENDGRID_KEY: ${SENDGRID_KEY}
+      SERVER_URL: ${SERVER_URL}
+    restart: "on-failure"
+
+  otasoft-api:
+    image: "otasoft-api:dev"
+    container_name: "otasoft-api"
+    build:
+      context: "./api-gateway/otasoft-api"
+    networks:
+      - "frontend"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "otasoft-auth"
+      - "otasoft-customer"
+      - "otasoft-mail"
+      - "otasoft-booking"
+    environment: 
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      RABBITMQ_SECOND_HOST_PORT: ${RABBITMQ_SECOND_HOST_PORT}
+    restart: "on-failure"
+
+  auth-db:
+    image: "postgres:12-alpine"
+    container_name: "auth-db"
+    networks:
+      - "authdomain"
+    expose:
+      - ${AUTH_POSTGRES_PORT}
+    volumes:
+      - authdata:/var/lib/postgresql/data
+    environment:
+      DB_HOST: "auth-db"
+      DB_PORT: ${AUTH_POSTGRES_PORT}
+      DB_USERNAME: ${AUTH_POSTGRES_USERNAME}
+      DB_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      DB_DATABASE: ${AUTH_POSTGRES_DATABASE}
+    restart: "on-failure"
+
+  booking-db:
+    image: "postgres:12-alpine"
+    container_name: "booking-db"
+    networks:
+      - "bookingdomain"
+    expose:
+      - ${BOOKING_POSTGRES_PORT}
+    volumes:
+      - bookingdata:/var/lib/postgresql/data
+    environment:
+      DB_HOST: "booking-db"
+      DB_PORT: ${BOOKING_POSTGRES_PORT}
+      DB_USERNAME: ${BOOKING_POSTGRES_USERNAME}
+      DB_PASSWORD: ${BOOKING_POSTGRES_PASSWORD}
+      DB_DATABASE: ${BOOKING_POSTGRES_DATABASE}
+    restart: "on-failure"
+
+  customer-db:
+    image: "postgres:12-alpine"
+    container_name: "customer-db"
+    networks:
+      - "customerdomain"
+    expose:
+      - "5432"
+    volumes:
+      - customerdata:/var/lib/postgresql/data
+    environment:
+      DB_HOST: "customer-db"
+      DB_PORT: ${CUSTOMER_POSTGRES_PORT}
+      DB_USERNAME: ${CUSTOMER_POSTGRES_USERNAME}
+      DB_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
+      DB_DATABASE: ${CUSTOMER_POSTGRES_DATABASE}
+    restart: "on-failure"
+
+  mail-db:
+    image: "postgres:12-alpine"
+    container_name: "mail-db"
+    networks:
+      - "maildomain"
+    expose:
+      - "5432"
+    volumes:
+      - maildata:/var/lib/postgresql/data
+    environment:
+      DB_HOST: "mail-db"
+      DB_PORT: ${MAIL_POSTGRES_PORT}
+      DB_USERNAME: ${MAIL_POSTGRES_USERNAME}
+      DB_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
+      DB_DATABASE: ${MAIL_POSTGRES_DATABASE}
+    restart: "on-failure"
+
+networks:
+  frontend:
+  backend:
+  bookingdomain:
+  authdomain:
+  customerdomain:
+  maildomain:
+
+volumes:
+  customerdata:
+  authdata:
+  bookingdata:
+  maildata:
