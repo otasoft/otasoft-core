@@ -17,7 +17,7 @@ services:
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
       RABBITMQ_NODENAME: "rabbitmq"
     networks: 
-      - "rabbitmqconnection"
+      - "backend"
 
   otasoft-auth:
     image: "otasoft-auth:dev"
@@ -28,12 +28,8 @@ services:
       - ./microservices/otasoft-auth:/usr/share/microservices/otasoft-auth
     command: yarn start:dev
     networks:
-      - "frontend"
       - "backend"
       - "authdomain"
-      - "rabbitmqconnection"
-    expose:
-      - "5673"
     depends_on:
       - "auth-db"
       - "rabbitmq"
@@ -48,7 +44,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      RABBITMQ_FIRST_HOST_PORT: 5672
       RABBITMQ_NODENAME: "rabbitmq"
       JWT_SECRET: ${AUTH_JWT_SECRET}
       JWT_EXPIRATION_TIME: ${AUTH_JWT_EXPIRATION_TIME}
@@ -64,12 +60,8 @@ services:
       - /usr/share/microservices/otasoft-booking/node_modules
     command: yarn start:dev
     networks:
-      - "frontend"
       - "backend"
       - "bookingdomain"
-      - "rabbitmqconnection"
-    expose:
-      - "5673"
     depends_on:
       - "booking-db"
       - "rabbitmq"
@@ -91,12 +83,8 @@ services:
       - /usr/share/microservices/otasoft-customer/node_modules
     command: yarn start:dev
     networks:
-      - "frontend"
       - "backend"
       - "customerdomain"
-      - "rabbitmqconnection"
-    expose:
-      - "5673"
     depends_on:
       - "customer-db"
       - "rabbitmq"
@@ -109,7 +97,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      RABBITMQ_FIRST_HOST_PORT: 5672
       RABBITMQ_NODENAME: "rabbitmq"
     restart: "on-failure"
 
@@ -123,12 +111,8 @@ services:
       - /usr/share/microservices/otasoft-mail/node_modules
     command: yarn start:dev
     networks:
-      - "frontend"
       - "backend"
       - "maildomain"
-      - "rabbitmqconnection"
-    expose:
-      - "5673"
     depends_on:
       - "mail-db"
       - "rabbitmq"
@@ -141,7 +125,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      RABBITMQ_FIRST_HOST_PORT: 5672
       RABBITMQ_NODENAME: "rabbitmq"
       SENDGRID_KEY: ${SENDGRID_KEY}
       SERVER_URL: ${SERVER_URL}
@@ -157,13 +141,7 @@ services:
       - /usr/share/microservices/otasoft-api/node_modules
     command: yarn start:dev
     networks:
-      - "frontend"
       - "backend"
-      - "authdomain"
-      - "bookingdomain"
-      - "customerdomain"
-      - "maildomain"
-      - "rabbitmqconnection"
     ports:
       - "3000:3000"
     depends_on:
@@ -172,13 +150,11 @@ services:
       - "otasoft-mail"
       - "otasoft-booking"
       - "rabbitmq"
-    links: 
-      - "rabbitmq"
     environment: 
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-      RABBITMQ_FIRST_HOST_PORT: ${RABBITMQ_FIRST_HOST_PORT}
+      RABBITMQ_FIRST_HOST_PORT: 5672
       RABBITMQ_SECOND_HOST_PORT: ${RABBITMQ_SECOND_HOST_PORT}
       RABBITMQ_NODENAME: "rabbitmq"
     restart: "on-failure"
@@ -252,13 +228,11 @@ services:
     restart: "on-failure"
 
 networks:
-  frontend:
   backend:
   bookingdomain:
   authdomain:
   customerdomain:
   maildomain:
-  rabbitmqconnection:
 
 volumes:
   customerdata:
