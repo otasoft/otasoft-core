@@ -26,6 +26,7 @@ services:
       context: "./microservices/otasoft-auth"
     volumes:
       - ./microservices/otasoft-auth:/usr/share/microservices/otasoft-auth
+      - /usr/share/microservices/otasoft-auth/node_modules
     command: yarn start:dev
     networks:
       - "backend"
