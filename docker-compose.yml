@@ -16,7 +16,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
       RABBITMQ_NODENAME: "rabbitmq"
-    networks: 
+    networks:
       - "backend"
 
   otasoft-auth:
@@ -24,10 +24,6 @@ services:
     container_name: "otasoft-auth"
     build:
       context: "./microservices/otasoft-auth"
-    volumes:
-      - ./microservices/otasoft-auth:/usr/share/microservices/otasoft-auth
-      - /usr/share/microservices/otasoft-auth/node_modules
-    command: yarn start:dev
     networks:
       - "backend"
       - "authdomain"
@@ -56,10 +52,6 @@ services:
     container_name: "otasoft-booking"
     build:
       context: "./microservices/otasoft-booking"
-    volumes:
-      - ./microservices/otasoft-booking:/usr/share/microservices/otasoft-booking
-      - /usr/share/microservices/otasoft-booking/node_modules
-    command: yarn start:dev
     networks:
       - "backend"
       - "bookingdomain"
@@ -79,10 +71,6 @@ services:
     container_name: "otasoft-customer"
     build:
       context: "./microservices/otasoft-customer"
-    volumes:
-      - ./microservices/otasoft-customer:/usr/share/microservices/otasoft-customer
-      - /usr/share/microservices/otasoft-customer/node_modules
-    command: yarn start:dev
     networks:
       - "backend"
       - "customerdomain"
@@ -107,10 +95,6 @@ services:
     container_name: "otasoft-mail"
     build:
       context: "./microservices/otasoft-mail"
-    volumes:
-      - ./microservices/otasoft-mail:/usr/share/microservices/otasoft-mail
-      - /usr/share/microservices/otasoft-mail/node_modules
-    command: yarn start:dev
     networks:
       - "backend"
       - "maildomain"
@@ -137,10 +121,6 @@ services:
     container_name: "otasoft-api"
     build:
       context: "./api-gateway/otasoft-api"
-    volumes:
-      - ./api-gateway/otasoft-api:/usr/share/api-gateway/otasoft-api
-      - /usr/share/microservices/otasoft-api/node_modules
-    command: yarn start:dev
     networks:
       - "backend"
     ports:
