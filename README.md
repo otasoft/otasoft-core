@@ -33,12 +33,14 @@ Otasoft projects are and always will be open source (MIT Licence). Anyone can us
 ## Table of Contents
 
 * [Getting Started](#getting-started)
-  * [Installation](#installation)
 * [Usage](#usage)
 * [Architecture](#architecture)
-* [Contributing](#contributing)
-* [License](#license)
+* [Layers](#layers)
 * [Core Team](#core-team)
+* [Roadmap](#roadmap)
+* [Contributing](#contributing)
+* [How to support?](#how-to-support?)
+* [License](#license)
 
 <!-- GETTING STARTED -->
 ## Getting Started
