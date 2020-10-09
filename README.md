@@ -1,75 +1,140 @@
+<br />
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+  <a href="https://github.com/otasoft/otasoft-core">
+    <img src="doc/otasoft-core-logo.png" alt="Otasoft Logo" width="128" height="128">
+  </a>
+
+  <h1 align="center">Otasoft Core - Booking engine for Online Travel Agencies</h1>
+
+  <p align="center">
+    <!-- <a href="https://github.com/otasoft/otasoft-core"><strong>Explore the docs »</strong></a> -->
+    <!-- <a href="https://github.com/otasoft/otasoft-core">View Demo</a> -->
+    <!-- · -->
+    <a href="https://github.com/otasoft/otasoft-core/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/otasoft/otasoft-core/issues">Request Feature</a>
+  </p>
+  <p align="center">
+    <a href="https://github.com/otasoft/otasoft-api/actions"><img src="https://github.com/otasoft/otasoft-api/workflows/Node.js%20CI/badge.svg?branch=master" alt="CI"></a>
 </p>
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## About The Project
+Otasoft Core is a Nest.js based booking engine for Online Travel Agencies (OTA's). Thanks to the microservice architecture, business logic is separated into different services allowing for greater scallability, extensibility, and separation of concerns. Otasoft Core can be configured in many ways to suit your business needs:
 
-## Description
+* Databases, message brokers, authentication methods, and many more can all be configured to connect to the new or existing infrasctructure
+* Works great with both REST and GraphQL
+* Each microservice is a separate project(repo) that allows distributed development teams to work seamlessly
+* Modules are separate entities, so you can choose which services you would like to use in your system
+* Connect any modern frontend application. By default, we have Nuxt (Vue.js) and Gatsby (React.js) frontends already implemented and ready to use.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Otasoft projects are and always will be open source (MIT Licence). Anyone can use and support the project. The project is currently in the development phase.
 
-## Installation
 
-```bash
-$ npm install
+## Table of Contents
+
+* [Getting Started](#getting-started)
+* [Usage](#usage)
+* [Architecture](#architecture)
+* [Layers](#layers)
+* [Core Team](#core-team)
+* [Roadmap](#roadmap)
+* [Contributing](#contributing)
+* [How to support?](#how-to-support?)
+* [License](#license)
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To start developing the project please check if you have these tools installed on your machine:
+
+* [Node.js](https://nodejs.org/en/download/)
+* [Yarn](https://yarnpkg.com/getting-started/install)
+* [Docker](https://www.docker.com/get-started)
+
+Installation
+
+1. Clone the repo
+```sh
+git clone https://github.com/otasoft/otasoft-core
+```
+2. Install all projects dependencies
+```sh
+sh scripts/install.sh
+```
+3. Copy .env.example file as .env and fill it with your environment variables
+```sh
+cp .env.example .env
+```
+4. Run docker-compose for all projects or for each individual project
+```sh
+docker-compose up
+```
+5. Run project
+```sh
+yarn start:dev
 ```
 
-## Running the app
+## Architecture
+ 
+The Otasoft API acts as a gateway/proxy for the different microservices it exposes. The GraphQL resolvers and REST controllers make calls to the RabbitMQ microservices through client-server communication. All elements of the Otasoft Core system are packed into docker images and can be run as containers.
 
-```bash
-# development
-$ npm run start
+![Architecture Diagram](doc/otasoft-core-architecture.png)
 
-# watch mode
-$ npm run start:dev
+This architecture implements the following Microservice Design Patterns:
 
-# production mode
-$ npm run start:prod
-```
+1. [Microservice Architecture](https://microservices.io/patterns/microservices.html)
+2. [Subdomain Decomposition](https://microservices.io/patterns/decomposition/decompose-by-subdomain.html)
+3. [Externalized Configuration](https://microservices.io/patterns/externalized-configuration.html)
+4. [Remote Procedure Invocation](https://microservices.io/patterns/communication-style/rpi.html)
+5. [API Gateway](https://microservices.io/patterns/apigateway.html)
+6. [Database per Service](https://microservices.io/patterns/data/database-per-service.html)
+7. [CQRS](https://microservices.io/patterns/data/cqrs.html)
 
-## Test
+## Layers
 
-```bash
-# unit tests
-$ npm run test
+### API Layer
 
-# e2e tests
-$ npm run test:e2e
+Otasoft API built using [NestJS](https://nestjs.com/) acts as the API Layer for the architecture. It takes care of listening for client requests and calling the appropriate back-end microservice to fulfill them.
 
-# test coverage
-$ npm run test:cov
-```
+### Microservice Layer
 
-## Support
+[NestJS + RabbitMQ](https://www.rabbitmq.com/) was chosen as the framework for the creation of the microservices. Each service has its own database and thanks to that, microservices can work independently. All microservices are closed for any connection except the one that is coming from API Gateway.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Persistence Layer
 
-## Stay in touch
+PostgreSQL and MySQL are used as the databases and [TypeOrm](https://typeorm.io/) is used as the Object-Relational Mapper (ORM).
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<!-- CORE TEAM -->
+## Core Team
 
+[Jakub Andrzejewski](https://github.com/Baroshem) -> Founder, Developer
+
+[Adam Oleszko](https://github.com/AdamOleszko) -> Core Team Member, Developer
+
+[Tomasz Anioł](https://github.com/tom-aniol) -> Core Team Member, Marketing
+
+[Kamil Wanzek](https://www.linkedin.com/in/kamil-wanzek/) -> Core Team Member, UX/UI Designer
+
+<!-- ROADMAP -->
+## Roadmap
+
+See the [open issues](https://github.com/otasoft/otasoft-core/issues) for a list of proposed features (and known issues).
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+You are welcome to contribute to Otasoft projects. Please see [contribution tips](CONTRIBUTING.md)
+
+<!-- SUPPORT -->
+## How to support?
+Otasoft projects are and always will be Open Source.
+
+Core team and contributors in the Otasoft ecosystem spend their free and off work time to make this project grow. If you would like to support us you can do so by:
+
+- contributing - it does not matter whether it is writing code, creating designs, or sharing knowledge in our e-books and pdfs. Any help is always welcome! 
+- evangelizing - share a good news about Otasoft projects in social media or during technology conferences ;)
+
+<!-- LICENSE -->
 ## License
 
-  Nest is [MIT licensed](LICENSE).
+Distributed under the [MIT licensed](LICENSE). See `LICENSE` for more information.
