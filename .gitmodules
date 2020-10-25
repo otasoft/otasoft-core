@@ -13,3 +13,6 @@
 [submodule "microservices/otasoft-booking"]
 	path = microservices/otasoft-booking
 	url = git@github.com:otasoft/otasoft-booking.git
+[submodule "microservices/otasoft-catalog"]
+	path = microservices/otasoft-catalog
+	url = git@github.com:otasoft/otasoft-catalog.git
