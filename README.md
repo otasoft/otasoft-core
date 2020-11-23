@@ -90,6 +90,9 @@ This architecture implements the following Microservice Design Patterns:
 6. [Database per Service](https://microservices.io/patterns/data/database-per-service.html)
 7. [CQRS](https://microservices.io/patterns/data/cqrs.html)
 
+Proposition of a new architecture looks as follows:
+
+![Architecture Diagram](doc/otasoft-core-new-architecture.png)
 ## Layers
 
 ### API Layer
@@ -107,13 +110,11 @@ PostgreSQL and MySQL are used as the databases and [TypeOrm](https://typeorm.io/
 <!-- CORE TEAM -->
 ## Core Team
 
-[Jakub Andrzejewski](https://github.com/Baroshem) -> Founder, Developer
+[Jakub Andrzejewski](https://www.linkedin.com/in/jakub-andrzejewski/) -> Founder, Developer
 
-[Adam Oleszko](https://github.com/AdamOleszko) -> Core Team Member, Developer
+[Adam Oleszko](https://www.linkedin.com/in/adam-oleszko/) -> Core Team Member, Developer
 
-[Tomasz Anioł](https://github.com/tom-aniol) -> Core Team Member, Marketing
-
-[Kamil Wanzek](https://www.linkedin.com/in/kamil-wanzek/) -> Core Team Member, UX/UI Designer
+[Maciej Hnat](https://www.linkedin.com/in/maciej-hnat/) -> Core Team Member, Frontend Developer
 
 <!-- ROADMAP -->
 ## Roadmap
