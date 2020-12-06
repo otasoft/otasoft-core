@@ -4,14 +4,14 @@ services:
   otasoft-api:
     image: "otasoft-api:dev"
     container_name: "otasoft-api"
-    build:
-      context: "./api-gateway/otasoft-api"
+    # build:
+    #   context: "./api-gateway/otasoft-api"
     networks:
       - "backend"
     ports:
       - "3000:3000"
     depends_on:
-      # - "otasoft-auth"
+      - "otasoft-auth"
       # - "otasoft-customer"
       # - "otasoft-mail"
       # - "otasoft-booking"
@@ -21,6 +21,8 @@ services:
     env_file: .env
     environment: 
       REDIS_HOST: otasoft-api-redis
+      RABBITMQ_FIRST_HOST_PORT: 5672
+      RABBITMQ_NODENAME: "otasoft-api-rabbitmq"
     restart: "on-failure"
 
   otasoft-api-rabbitmq:
@@ -72,33 +74,44 @@ services:
     networks:
       - "backend"
 
-  # otasoft-auth:
-  #   image: "otasoft-auth:dev"
-  #   container_name: "otasoft-auth"
-  #   build:
-  #     context: "./microservices/otasoft-auth"
-  #   networks:
-  #     - "backend"
-  #     - "authdomain"
-  #   depends_on:
-  #     - "auth-db"
-  #     - "rabbitmq"
-  #   links: 
-  #     - "rabbitmq"
-  #   environment: 
-  #     POSTGRES_HOST: "auth-db"
-  #     POSTGRES_PORT: ${AUTH_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${AUTH_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${AUTH_POSTGRES_DATABASE}
-  #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-  #     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-  #     RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-  #     RABBITMQ_FIRST_HOST_PORT: 5672
-  #     RABBITMQ_NODENAME: "rabbitmq"
-  #     JWT_SECRET: ${AUTH_JWT_SECRET}
-  #     JWT_EXPIRATION_TIME: ${AUTH_JWT_EXPIRATION_TIME}
-  #   restart: "on-failure"
+  otasoft-auth:
+    image: "otasoft-auth:dev"
+    container_name: "otasoft-auth"
+    # build:
+    #   context: "./microservices/otasoft-auth"
+    networks:
+      - "backend"
+      - "authdomain"
+    depends_on:
+      - "otasoft-auth-db"
+      - "otasoft-api-rabbitmq"
+    links: 
+      - "otasoft-api-rabbitmq"
+    env_file: .env
+    environment: 
+      POSTGRES_HOST: "otasoft-auth-db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: ${AUTH_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${AUTH_POSTGRES_DATABASE}
+      RABBITMQ_NODENAME: "otasoft-api-rabbitmq"
+      RABBITMQ_FIRST_HOST_PORT: "5672"
+    restart: "on-failure"
+
+  otasoft-auth-db:
+    image: postgres:${AUTH_POSTGRES_VERSION}
+    container_name: "otasoft-auth-db"
+    networks:
+      - "authdomain"
+    expose:
+      - "5432"
+    volumes:
+      - /data/postgres/
+    environment:
+      POSTGRES_USER: ${AUTH_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AUTH_POSTGRES_DATABASE}
+    restart: "on-failure"
 
   # otasoft-booking:
   #   image: "otasoft-booking:dev"
@@ -169,25 +182,6 @@ services:
   #     SERVER_URL: ${SERVER_URL}
   #   restart: "on-failure"
 
-  
-
-  # auth-db:
-  #   image: "postgres:12-alpine"
-  #   container_name: "auth-db"
-  #   networks:
-  #     - "authdomain"
-  #   expose:
-  #     - ${AUTH_POSTGRES_PORT}
-  #   volumes:
-  #     - authdata:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_HOST: "auth-db"
-  #     POSTGRES_PORT: ${AUTH_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${AUTH_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${AUTH_POSTGRES_DATABASE}
-  #   restart: "on-failure"
-
   # booking-db:
   #   image: "postgres:12-alpine"
   #   container_name: "booking-db"
@@ -248,6 +242,6 @@ networks:
 
 volumes:
   customerdata:
-  authdata:
+  auth-db:
   bookingdata:
   maildata:
