@@ -12,7 +12,7 @@ services:
       - "3000:3000"
     depends_on:
       - "otasoft-auth"
-      # - "otasoft-customer"
+      - "otasoft-customer"
       # - "otasoft-mail"
       - "otasoft-booking"
       - "otasoft-api-rabbitmq"
@@ -115,8 +115,8 @@ services:
   otasoft-booking:
     image: "otasoft-booking:dev"
     container_name: "otasoft-booking"
-    build:
-      context: "./microservices/otasoft-booking"
+    # build:
+    #   context: "./microservices/otasoft-booking"
     networks:
       - "backend"
       - "bookingdomain"
@@ -151,29 +151,44 @@ services:
       POSTGRES_DB: ${BOOKING_POSTGRES_DATABASE}
     restart: "on-failure"
 
-  # otasoft-customer:
-  #   image: "otasoft-customer:dev"
-  #   container_name: "otasoft-customer"
-  #   build:
-  #     context: "./microservices/otasoft-customer"
-  #   networks:
-  #     - "backend"
-  #     - "customerdomain"
-  #   depends_on:
-  #     - "customer-db"
-  #     - "rabbitmq"
-  #   environment: 
-  #     POSTGRES_HOST: "customer-db"
-  #     POSTGRES_PORT: ${CUSTOMER_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${CUSTOMER_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${CUSTOMER_POSTGRES_DATABASE}
-  #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-  #     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-  #     RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-  #     RABBITMQ_FIRST_HOST_PORT: 5672
-  #     RABBITMQ_NODENAME: "rabbitmq"
-  #   restart: "on-failure"
+  otasoft-customer:
+    image: "otasoft-customer:dev"
+    container_name: "otasoft-customer"
+    # build:
+    #   context: "./microservices/otasoft-customer"
+    networks:
+      - "backend"
+      - "customerdomain"
+    depends_on:
+      - "otasoft-customer-db"
+      - "otasoft-api-rabbitmq"
+    links: 
+      - "otasoft-api-rabbitmq"
+    env_file: .env
+    environment: 
+      POSTGRES_HOST: "otasoft-customer-db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: ${CUSTOMER_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${CUSTOMER_POSTGRES_DATABASE}
+      RABBITMQ_FIRST_HOST_PORT: "5672"
+      RABBITMQ_NODENAME: "otasoft-api-rabbitmq"
+    restart: "on-failure"
+
+  otasoft-customer-db:
+    image: postgres:${AUTH_POSTGRES_VERSION}
+    container_name: "otasoft-customer-db"
+    networks:
+      - "customerdomain"
+    expose:
+      - "5432"
+    volumes:
+      - customerdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${CUSTOMER_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${CUSTOMER_POSTGRES_DATABASE}
+    restart: "on-failure"
 
   # otasoft-mail:
   #   image: "otasoft-mail:dev"
@@ -199,23 +214,6 @@ services:
   #     RABBITMQ_NODENAME: "rabbitmq"
   #     SENDGRID_KEY: ${SENDGRID_KEY}
   #     SERVER_URL: ${SERVER_URL}
-  #   restart: "on-failure"
-
-  # customer-db:
-  #   image: "postgres:12-alpine"
-  #   container_name: "customer-db"
-  #   networks:
-  #     - "customerdomain"
-  #   expose:
-  #     - ${CUSTOMER_POSTGRES_PORT}
-  #   volumes:
-  #     - customerdata:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_HOST: "customer-db"
-  #     POSTGRES_PORT: ${CUSTOMER_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${CUSTOMER_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${CUSTOMER_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${CUSTOMER_POSTGRES_DATABASE}
   #   restart: "on-failure"
 
   # mail-db:
