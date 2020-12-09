@@ -105,7 +105,7 @@ services:
     expose:
       - "5432"
     volumes:
-      - /data/postgres/
+      - authdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${AUTH_POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
@@ -190,48 +190,49 @@ services:
       POSTGRES_DB: ${CUSTOMER_POSTGRES_DATABASE}
     restart: "on-failure"
 
-  # otasoft-mail:
-  #   image: "otasoft-mail:dev"
-  #   container_name: "otasoft-mail"
-  #   build:
-  #     context: "./microservices/otasoft-mail"
-  #   networks:
-  #     - "backend"
-  #     - "maildomain"
-  #   depends_on:
-  #     - "mail-db"
-  #     - "rabbitmq"
-  #   environment: 
-  #     POSTGRES_HOST: "mail-db"
-  #     POSTGRES_PORT: ${BOOKING_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${MAIL_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${MAIL_POSTGRES_DATABASE}
-  #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-  #     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-  #     RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
-  #     RABBITMQ_FIRST_HOST_PORT: 5672
-  #     RABBITMQ_NODENAME: "rabbitmq"
-  #     SENDGRID_KEY: ${SENDGRID_KEY}
-  #     SERVER_URL: ${SERVER_URL}
-  #   restart: "on-failure"
+  otasoft-mail:
+    image: "otasoft-mail:dev"
+    container_name: "otasoft-mail"
+    build:
+      context: "./microservices/otasoft-mail"
+    networks:
+      - "backend"
+      - "maildomain"
+    depends_on:
+      - "otasoft-mail-db"
+      - "otasoft-api-rabbitmq"
+    links: 
+      - "otasoft-api-rabbitmq"
+    env_file: .env
+    environment: 
+      POSTGRES_HOST: "otasoft-mail-db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: ${MAIL_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${MAIL_POSTGRES_DATABASE}
+      # RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      # RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      # RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+      RABBITMQ_FIRST_HOST_PORT: "5672"
+      RABBITMQ_NODENAME: "otasoft-api-rabbitmq"
+      # SENDGRID_KEY: ${SENDGRID_KEY}
+      # SERVER_URL: ${SERVER_URL}
+    restart: "on-failure"
 
-  # mail-db:
-  #   image: "postgres:12-alpine"
-  #   container_name: "mail-db"
-  #   networks:
-  #     - "maildomain"
-  #   expose:
-  #     - ${MAIL_POSTGRES_PORT}
-  #   volumes:
-  #     - maildata:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_HOST: "mail-db"
-  #     POSTGRES_PORT: ${MAIL_POSTGRES_PORT}
-  #     POSTGRES_USERNAME: ${MAIL_POSTGRES_USERNAME}
-  #     POSTGRES_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
-  #     POSTGRES_DATABASE: ${MAIL_POSTGRES_DATABASE}
-  #   restart: "on-failure"
+  otasoft-mail-db:
+    image: postgres:${AUTH_POSTGRES_VERSION}
+    container_name: "otasoft-mail-db"
+    networks:
+      - "maildomain"
+    expose:
+      - "5432"
+    volumes:
+      - maildata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${MAIL_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${MAIL_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${MAIL_POSTGRES_DATABASE}
+    restart: "on-failure"
 
 networks:
   backend:
@@ -242,6 +243,6 @@ networks:
 
 volumes:
   customerdata:
-  auth-db:
+  authdata:
   bookingdata:
   maildata:
