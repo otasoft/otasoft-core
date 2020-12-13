@@ -13,9 +13,10 @@ services:
     depends_on:
       - "otasoft-auth"
       - "otasoft-customer"
-      # - "otasoft-mail"
+      - "otasoft-mail"
       - "otasoft-booking"
       - "otasoft-api-rabbitmq"
+      - "otasoft-catalog"
       - "otasoft-api-redis"
     env_file: .env
     environment: 
@@ -193,8 +194,8 @@ services:
   otasoft-mail:
     image: "otasoft-mail:dev"
     container_name: "otasoft-mail"
-    build:
-      context: "./microservices/otasoft-mail"
+    # build:
+    #   context: "./microservices/otasoft-mail"
     networks:
       - "backend"
       - "maildomain"
@@ -234,15 +235,193 @@ services:
       POSTGRES_DB: ${MAIL_POSTGRES_DATABASE}
     restart: "on-failure"
 
+  otasoft-catalog:
+    image: "otasoft-catalog:dev"
+    container_name: "otasoft-catalog"
+    # build:
+    #   context: "./microservices/otasoft-catalog"
+    networks:
+      - "backend"
+      - "catalogdomain"
+    depends_on:
+      - "otasoft-catalog-mysql-master"
+      - "otasoft-api-rabbitmq"
+    links: 
+      - "otasoft-api-rabbitmq"
+    env_file: .env
+    environment: 
+      RABBITMQ_FIRST_HOST_PORT: "5672"
+      RABBITMQ_NODENAME: "otasoft-api-rabbitmq"
+      MASTER_HOST: "otasoft-catalog-mysql-master"
+      MASTER_PORT: "3306"
+    restart: "on-failure"
+
+  otasoft-catalog-mysql-master:
+    image: mysql:${DATABASE_VERSION}
+    container_name: otasoft-catalog-mysql-master
+    ports:
+      - ${MASTER_PORT}:3306
+    expose:
+      - "3306"
+    environment: 
+      - MYSQL_DATABASE=${MASTER_DATABASE}
+      - MYSQL_USER=${MASTER_USER}
+      - MYSQL_PASSWORD=${MASTER_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_MASTER_ROOT_PASSWORD}
+      - MYSQL_HOST=${MASTER_HOST}
+      - MYSQL_PORT=${MASTER_PORT}
+      - MYSQL_SLAVE_ADDRESS=otasoft-catalog-mysql-slave
+      - MYSQL_REPLICATION_USER=${MYSQL_REPLICATION_USER}
+      - MYSQL_REPLICATION_PASSWORD=${MYSQL_REPLICATION_PASSWORD}
+    volumes:
+      - ./microservices/otasoft-catalog/src/db/replication/master/data:/var/lib/mysql:rw,cached
+      - ./microservices/otasoft-catalog/src/db/replication/master/conf:/etc/mysql/conf.d:rw,cached
+    networks:
+      - "catalogdomain"
+
+  otasoft-catalog-mysql-slave:
+    image: mysql:${DATABASE_VERSION}
+    container_name: otasoft-catalog-mysql-slave
+    ports:
+      - ${SLAVE_PORT}:3306
+    expose:
+      - "3306"
+    environment: 
+      - MYSQL_DATABASE=${SLAVE_DATABASE}
+      - MYSQL_USER=${SLAVE_USER}
+      - MYSQL_PASSWORD=${SLAVE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_SLAVE_ROOT_PASSWORD}
+      - MYSQL_HOST=${SLAVE_HOST}
+      - MYSQL_PORT=${SLAVE_PORT}
+      - MYSQL_MASTER_ADDRESS=otasoft-catalog-mysql-master
+      - MYSQL_REPLICATION_USER=${MYSQL_REPLICATION_USER}
+      - MYSQL_REPLICATION_PASSWORD=${MYSQL_REPLICATION_PASSWORD}
+    volumes:
+      - ./microservices/otasoft-catalog/src/db/replication/slave/data:/var/lib/mysql:rw,cached
+      - ./microservices/otasoft-catalog/src/db/replication/slave/conf:/etc/mysql/conf.d:rw,cached
+    networks:
+      - catalogdomain
+
+  otasoft-catalog-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    container_name: otasoft-catalog-es01
+    environment:
+      - node.name=otasoft-catalog-es01
+      - cluster.name=${ELASTICSEARCH_CLUSTER_NAME}
+      - network.host=${ELASTICSEARCH_NETWORK_HOST}
+      - http.port=${ELASTICSEARCH_PORT}
+      - discovery.seed_hosts=otasoft-catalog-es02,otasoft-catalog-es03
+      - cluster.initial_master_nodes=otasoft-catalog-es01,otasoft-catalog-es02,otasoft-catalog-es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - otasoft-catalog-es-data01:/usr/share/elasticsearch/data
+    ports:
+      - ${ELASTICSEARCH_PORT}:9200
+    networks:
+      - otasoft-catalog-elastic
+      - otasoft-catalog-proxy
+      - catalogdomain
+
+  otasoft-catalog-es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    container_name: otasoft-catalog-es02
+    environment:
+      - node.name=otasoft-catalog-es02
+      - cluster.name=${ELASTICSEARCH_CLUSTER_NAME}
+      - network.host=${ELASTICSEARCH_NETWORK_HOST}
+      - http.port=${ELASTICSEARCH_PORT}
+      - discovery.seed_hosts=otasoft-catalog-es01,otasoft-catalog-es03
+      - cluster.initial_master_nodes=otasoft-catalog-es01,otasoft-catalog-es02,otasoft-catalog-es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - otasoft-catalog-es-data02:/usr/share/elasticsearch/data
+    networks:
+      - otasoft-catalog-elastic
+      - catalogdomain
+
+  otasoft-catalog-es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    container_name: otasoft-catalog-es03
+    environment:
+      - node.name=otasoft-catalog-es03
+      - cluster.name=${ELASTICSEARCH_CLUSTER_NAME}
+      - discovery.seed_hosts=otasoft-catalog-es01,otasoft-catalog-es02
+      - cluster.initial_master_nodes=otasoft-catalog-es01,otasoft-catalog-es02,otasoft-catalog-es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - otasoft-catalog-es-data03:/usr/share/elasticsearch/data
+    networks:
+      - otasoft-catalog-elastic
+      - catalogdomain
+
+  otasoft-catalog-kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    container_name: otasoft-catalog-kibana
+    environment:
+      SERVER_NAME: ${KIBANA_SERVER_NAME}
+      ELASTICSEARCH_URL: http://elasticsearch:${ELASTICSEARCH_PORT}/
+    ports:
+      - ${KIBANA_PORT}:5601
+    networks:
+      - otasoft-catalog-elastic
+      - otasoft-catalog-proxy
+      - catalogdomain
+
+  otasoft-catalog-nginx:
+    image: nginx:alpine
+    container_name: otasoft-catalog-nginx
+    ports:
+        - ${NGINX_PORT}:80
+        - 4443:443
+    volumes:
+        - ./microservices/otasoft-catalog/nginx/prod/:/etc/nginx/conf.d/
+        - ./microservices/otasoft-catalog/src/security/secrets/.htpasswd:/etc/nginx/.htpasswd
+        - ./microservices/otasoft-catalog/src/security/secrets/public-cert.crt:/etc/ssl/public-cert.crt
+        - ./microservices/otasoft-catalog/src/security/secrets/private-key.key:/etc/ssl/private-key.key
+    ulimits:
+      nproc: 65535
+    networks:
+      - otasoft-catalog-proxy
+      - catalogdomain
+
 networks:
   backend:
   bookingdomain:
   authdomain:
   customerdomain:
   maildomain:
+  catalogdomain:
+  otasoft-catalog-elastic:
+    driver: bridge
+  otasoft-catalog-proxy:
+    driver: bridge
 
 volumes:
   customerdata:
   authdata:
   bookingdata:
   maildata:
+  otasoft-catalog-es-data01:
+    driver: local
+  otasoft-catalog-es-data02:
+    driver: local
+  otasoft-catalog-es-data03:
+    driver: local
