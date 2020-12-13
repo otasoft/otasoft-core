@@ -193,7 +193,6 @@ services:
       - "otasoft-api-rabbitmq"
     links: 
       - "otasoft-api-rabbitmq"
-    env_file: .env
     environment: 
       POSTGRES_HOST: "otasoft-customer-db"
       POSTGRES_PORT: "5432"
