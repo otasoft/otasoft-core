@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/backend: "true"
+    io.kompose.service: otasoft-api
+  name: otasoft-api
+spec:
+  containers:
+    - env:
+        - name: CACHE_MAX_ITEMS_IN_CACHE
+        - name: CACHE_TTL_IN_SECONDS
+        - name: CORE_URL
+        - name: ENVIRONMENT
+        - name: FRONTEND_COOKIE
+        - name: JWT_ACCESS_TOKEN_EXPIRATION_TIME
+        - name: JWT_ACCESS_TOKEN_SECRET
+        - name: JWT_REFRESH_TOKEN_EXPIRATION_TIME
+        - name: JWT_REFRESH_TOKEN_SECRET
+        - name: NGINX_PORT
+        - name: OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER
+        - name: OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_ID
+        - name: OAUTH2_CLIENT_REGISTRATION_LOGIN_CLIENT_SECRET
+        - name: OAUTH2_CLIENT_REGISTRATION_LOGIN_POST_LOGOUT_REDIRECT_URI
+        - name: OAUTH2_CLIENT_REGISTRATION_LOGIN_REDIRECT_URI
+        - name: OAUTH2_CLIENT_REGISTRATION_LOGIN_SCOPE
+        - name: RABBITMQ_DEFAULT_PASS
+        - name: RABBITMQ_DEFAULT_USER
+        - name: RABBITMQ_DEFAULT_VHOST
+        - name: RABBITMQ_ERLANG_COOKIE
+        - name: RABBITMQ_FIRST_HOST_PORT
+          value: "5672"
+        - name: RABBITMQ_NODENAME
+          value: otasoft-api-rabbitmq
+        - name: REDIS_HOST
+          value: otasoft-api-redis
+        - name: REDIS_PASSWORD
+        - name: REDIS_PORT
+        - name: SERVE_LOCAL_SSL
+        - name: SESSION_SECRET
+      image: otasoft-api:dev
+      name: otasoft-api
+      ports:
+        - containerPort: 3000
+      resources: {}
+  restartPolicy: OnFailure
+status: {}

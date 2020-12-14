@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: otasoft-catalog-mysql-slave
+  name: otasoft-catalog-mysql-slave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: otasoft-catalog-mysql-slave
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/catalogdomain: "true"
+        io.kompose.service: otasoft-catalog-mysql-slave
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+            - name: MYSQL_HOST
+            - name: MYSQL_MASTER_ADDRESS
+              value: otasoft-catalog-mysql-master
+            - name: MYSQL_PASSWORD
+            - name: MYSQL_PORT
+            - name: MYSQL_REPLICATION_PASSWORD
+            - name: MYSQL_REPLICATION_USER
+            - name: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+          image: mysql:5.7
+          name: otasoft-catalog-mysql-slave
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: otasoft-catalog-mysql-slave-claim0
+            - mountPath: /etc/mysql/conf.d
+              name: otasoft-catalog-mysql-slave-claim1
+      restartPolicy: Always
+      volumes:
+        - name: otasoft-catalog-mysql-slave-claim0
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-mysql-slave-claim0
+        - name: otasoft-catalog-mysql-slave-claim1
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-mysql-slave-claim1
+status: {}
