@@ -4,8 +4,8 @@ services:
   otasoft-api:
     image: "otasoft-api:dev"
     container_name: "otasoft-api"
-    # build:
-    #   context: "./api-gateway/otasoft-api"
+    build:
+      context: "./api-gateway/otasoft-api"
     networks:
       - "backend"
     ports:
@@ -100,8 +100,8 @@ services:
   otasoft-auth:
     image: "otasoft-auth:dev"
     container_name: "otasoft-auth"
-    # build:
-    #   context: "./microservices/otasoft-auth"
+    build:
+      context: "./microservices/otasoft-auth"
     networks:
       - "backend"
       - "authdomain"
@@ -128,7 +128,7 @@ services:
     restart: "on-failure"
 
   otasoft-auth-db:
-    image: postgres:${AUTH_POSTGRES_VERSION}
+    image: postgres:13-alpine
     container_name: "otasoft-auth-db"
     networks:
       - "authdomain"
@@ -145,8 +145,8 @@ services:
   otasoft-booking:
     image: "otasoft-booking:dev"
     container_name: "otasoft-booking"
-    # build:
-    #   context: "./microservices/otasoft-booking"
+    build:
+      context: "./microservices/otasoft-booking"
     networks:
       - "backend"
       - "bookingdomain"
@@ -169,7 +169,7 @@ services:
     restart: "on-failure"
 
   otasoft-booking-db:
-    image: postgres:${AUTH_POSTGRES_VERSION}
+    image: postgres:13-alpine
     container_name: "otasoft-booking-db"
     networks:
       - "bookingdomain"
@@ -186,8 +186,8 @@ services:
   otasoft-customer:
     image: "otasoft-customer:dev"
     container_name: "otasoft-customer"
-    # build:
-    #   context: "./microservices/otasoft-customer"
+    build:
+      context: "./microservices/otasoft-customer"
     networks:
       - "backend"
       - "customerdomain"
@@ -210,7 +210,7 @@ services:
     restart: "on-failure"
 
   otasoft-customer-db:
-    image: postgres:${AUTH_POSTGRES_VERSION}
+    image: postgres:13-alpine
     container_name: "otasoft-customer-db"
     networks:
       - "customerdomain"
@@ -227,8 +227,8 @@ services:
   otasoft-mail:
     image: "otasoft-mail:dev"
     container_name: "otasoft-mail"
-    # build:
-    #   context: "./microservices/otasoft-mail"
+    build:
+      context: "./microservices/otasoft-mail"
     networks:
       - "backend"
       - "maildomain"
@@ -237,7 +237,6 @@ services:
       - "otasoft-api-rabbitmq"
     links: 
       - "otasoft-api-rabbitmq"
-    env_file: .env
     environment: 
       POSTGRES_HOST: "otasoft-mail-db"
       POSTGRES_PORT: "5432"
@@ -253,7 +252,7 @@ services:
     restart: "on-failure"
 
   otasoft-mail-db:
-    image: postgres:${AUTH_POSTGRES_VERSION}
+    image: postgres:13-alpine
     container_name: "otasoft-mail-db"
     networks:
       - "maildomain"
@@ -314,7 +313,7 @@ services:
     restart: "on-failure"
 
   otasoft-catalog-mysql-master:
-    image: mysql:${DATABASE_VERSION}
+    image: mysql:5.7
     container_name: otasoft-catalog-mysql-master
     ports:
       - ${MASTER_PORT}:3306
@@ -337,7 +336,7 @@ services:
       - "catalogdomain"
 
   otasoft-catalog-mysql-slave:
-    image: mysql:${DATABASE_VERSION}
+    image: mysql:5.7
     container_name: otasoft-catalog-mysql-slave
     ports:
       - ${SLAVE_PORT}:3306
@@ -360,7 +359,7 @@ services:
       - catalogdomain
 
   otasoft-catalog-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: otasoft-catalog-es01
     environment:
       - node.name=otasoft-catalog-es01
@@ -386,7 +385,7 @@ services:
       - catalogdomain
 
   otasoft-catalog-es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: otasoft-catalog-es02
     environment:
       - node.name=otasoft-catalog-es02
@@ -409,7 +408,7 @@ services:
       - catalogdomain
 
   otasoft-catalog-es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
     container_name: otasoft-catalog-es03
     environment:
       - node.name=otasoft-catalog-es03
@@ -430,7 +429,7 @@ services:
       - catalogdomain
 
   otasoft-catalog-kibana:
-    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    image: docker.elastic.co/kibana/kibana:7.9.2
     container_name: otasoft-catalog-kibana
     environment:
       SERVER_NAME: ${KIBANA_SERVER_NAME}
