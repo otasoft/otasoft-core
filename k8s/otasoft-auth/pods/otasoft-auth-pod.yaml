@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/authdomain: "true"
+    io.kompose.network/backend: "true"
+    io.kompose.service: otasoft-auth
+  name: otasoft-auth
+spec:
+  containers:
+    - env:
+        - name: EMAIL_SECRET
+        - name: HASH_PEPPER
+        - name: JWT_EXPIRATION_TIME
+        - name: JWT_SECRET
+        - name: POSTGRES_DATABASE
+        - name: POSTGRES_HOST
+          value: otasoft-auth-db
+        - name: POSTGRES_PASSWORD
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_USERNAME
+        - name: RABBITMQ_DEFAULT_PASS
+        - name: RABBITMQ_DEFAULT_USER
+        - name: RABBITMQ_DEFAULT_VHOST
+        - name: RABBITMQ_FIRST_HOST_PORT
+          value: "5672"
+        - name: RABBITMQ_NODENAME
+          value: otasoft-api-rabbitmq
+      image: otasoft-auth:dev
+      name: otasoft-auth
+      resources: {}
+  restartPolicy: OnFailure
+status: {}

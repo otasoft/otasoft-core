@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: otasoft-catalog-nginx
+  name: otasoft-catalog-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: otasoft-catalog-nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/catalogdomain: "true"
+        io.kompose.network/otasoft-catalog-proxy: "true"
+        io.kompose.service: otasoft-catalog-nginx
+    spec:
+      containers:
+        - image: nginx:alpine
+          name: otasoft-catalog-nginx
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/
+              name: otasoft-catalog-nginx-claim0
+            - mountPath: /etc/nginx/.htpasswd
+              name: otasoft-catalog-nginx-claim1
+            - mountPath: /etc/ssl/public-cert.crt
+              name: otasoft-catalog-nginx-claim2
+            - mountPath: /etc/ssl/private-key.key
+              name: otasoft-catalog-nginx-claim3
+      restartPolicy: Always
+      volumes:
+        - name: otasoft-catalog-nginx-claim0
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-nginx-claim0
+        - name: otasoft-catalog-nginx-claim1
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-nginx-claim1
+        - name: otasoft-catalog-nginx-claim2
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-nginx-claim2
+        - name: otasoft-catalog-nginx-claim3
+          persistentVolumeClaim:
+            claimName: otasoft-catalog-nginx-claim3
+status: {}

@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: otasoft-catalog-proxy
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/otasoft-catalog-proxy: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/otasoft-catalog-proxy: "true"

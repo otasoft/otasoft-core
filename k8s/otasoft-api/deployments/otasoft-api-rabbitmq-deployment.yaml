@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: otasoft-api-rabbitmq
+  name: otasoft-api-rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: otasoft-api-rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: otasoft-api-rabbitmq
+    spec:
+      containers:
+        - env:
+            - name: RABBITMQ_DEFAULT_PASS
+            - name: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_VHOST
+            - name: RABBITMQ_ERLANG_COOKIE
+            - name: RABBITMQ_NODENAME
+              value: rabbitmq
+          image: rabbitmq:3.8.8-management-alpine
+          name: otasoft-api-rabbitmq
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq/mnesia/rabbit@app-rabbitmq
+              name: otasoft-api-rabbitmq-claim0
+      hostname: otasoft-api-rabbitmq
+      restartPolicy: Always
+      volumes:
+        - name: otasoft-api-rabbitmq-claim0
+          persistentVolumeClaim:
+            claimName: otasoft-api-rabbitmq-claim0
+status: {}

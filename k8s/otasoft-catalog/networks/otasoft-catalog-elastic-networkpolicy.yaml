@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: otasoft-catalog-elastic
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/otasoft-catalog-elastic: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/otasoft-catalog-elastic: "true"

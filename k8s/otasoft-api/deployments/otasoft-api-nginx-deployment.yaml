@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: otasoft-api-nginx
+  name: otasoft-api-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: otasoft-api-nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: otasoft-api-nginx
+    spec:
+      containers:
+        - image: nginx:alpine
+          name: otasoft-api-nginx
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/
+              name: otasoft-api-nginx-claim0
+            - mountPath: /etc/ssl/public-cert.crt
+              name: otasoft-api-nginx-claim1
+            - mountPath: /etc/ssl/private-key.key
+              name: otasoft-api-nginx-claim2
+      restartPolicy: Always
+      volumes:
+        - name: otasoft-api-nginx-claim0
+          persistentVolumeClaim:
+            claimName: otasoft-api-nginx-claim0
+        - name: otasoft-api-nginx-claim1
+          persistentVolumeClaim:
+            claimName: otasoft-api-nginx-claim1
+        - name: otasoft-api-nginx-claim2
+          persistentVolumeClaim:
+            claimName: otasoft-api-nginx-claim2
+status: {}

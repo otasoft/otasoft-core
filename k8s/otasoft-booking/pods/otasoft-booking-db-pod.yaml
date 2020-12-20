@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/bookingdomain: "true"
+    io.kompose.service: otasoft-booking-db
+  name: otasoft-booking-db
+spec:
+  containers:
+    - env:
+        - name: POSTGRES_DB
+        - name: POSTGRES_PASSWORD
+        - name: POSTGRES_USER
+      image: postgres:13-alpine
+      name: otasoft-booking-db
+      ports:
+        - containerPort: 5432
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: bookingdata
+  restartPolicy: OnFailure
+  volumes:
+    - name: bookingdata
+      persistentVolumeClaim:
+        claimName: bookingdata
+status: {}
