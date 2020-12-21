@@ -19,3 +19,6 @@
 [submodule "frontends/vue-otasoft"]
 	path = frontends/vue-otasoft
 	url = git@github.com:otasoft/vue-otasoft.git
+[submodule "frontends/react-otasoft"]
+	path = frontends/react-otasoft
+	url = git@github.com:otasoft/react-otasoft.git
