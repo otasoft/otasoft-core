@@ -16,3 +16,6 @@
 [submodule "microservices/otasoft-catalog"]
 	path = microservices/otasoft-catalog
 	url = git@github.com:otasoft/otasoft-catalog.git
+[submodule "frontends/vue-otasoft"]
+	path = frontends/vue-otasoft
+	url = git@github.com:otasoft/vue-otasoft.git
