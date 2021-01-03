@@ -22,3 +22,6 @@
 [submodule "frontends/react-otasoft"]
 	path = frontends/react-otasoft
 	url = git@github.com:otasoft/react-otasoft.git
+[submodule "ml/otasoft-ml"]
+	path = ml/otasoft-ml
+	url = https://github.com/otasoft/otasoft-ml
