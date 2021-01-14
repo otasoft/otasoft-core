@@ -28,3 +28,6 @@
 [submodule "microservices/otasoft-payment"]
 	path = microservices/otasoft-payment
 	url = git@github.com:otasoft/otasoft-payment.git
+[submodule "proxy/otasoft-proxy"]
+	path = proxy/otasoft-proxy
+	url = https://github.com/otasoft/otasoft-proxy
