@@ -25,7 +25,7 @@ Otasoft Core is a Nest.js based booking engine for Online Travel Agencies (OTA's
 * Works great with both REST and GraphQL
 * Each microservice is a separate project(repo) that allows distributed development teams to work seamlessly
 * Modules are separate entities, so you can choose which services you would like to use in your system
-* Connect any modern frontend application. By default, we have Nuxt (Vue.js) and Gatsby (React.js) frontends already implemented and ready to use.
+* Connect any modern frontend application. By default, we have Nuxt (Vue.js) and Next.js (React.js) frontends already implemented and ready to use.
 
 Otasoft projects are and always will be open source (MIT Licence). Anyone can use and support the project. The project is currently in the development phase.
 
@@ -53,17 +53,24 @@ To start developing the project please check if you have these tools installed o
 
 Installation
 
-1. Clone the repo
+1. Clone otasoft-core repository with all submodules
 ```sh
-git clone https://github.com/otasoft/otasoft-core
+git clone --recurse-submodules git@github.com:otasoft/otasoft-core.git
 ```
 2. Install all projects dependencies
 ```sh
 sh scripts/install.sh
+
+bash scripts/install.sh # Windows
+
+# If you dont have bash installed this link could help you 
+# https://stackoverflow.com/questions/26522789/how-to-run-sh-on-windows-command-prompt
 ```
 3. Copy .env.example file as .env and fill it with your environment variables
 ```sh
-cp .env.example .env
+cp .env.example .env # Linux and Mac
+
+copy .env.example .env # Windows
 ```
 4. Run docker-compose for all projects or for each individual project
 ```sh
@@ -78,7 +85,7 @@ yarn start:dev
  
 The Otasoft API acts as a gateway/proxy for the different microservices it exposes. The GraphQL resolvers and REST controllers make calls to the RabbitMQ microservices through client-server communication. All elements of the Otasoft Core system are packed into docker images and can be run as containers.
 
-![Architecture Diagram](doc/otasoft-core-architecture.png)
+![Architecture Diagram](doc/otasoft-core-new-architecture.png)
 
 This architecture implements the following Microservice Design Patterns:
 
@@ -90,9 +97,6 @@ This architecture implements the following Microservice Design Patterns:
 6. [Database per Service](https://microservices.io/patterns/data/database-per-service.html)
 7. [CQRS](https://microservices.io/patterns/data/cqrs.html)
 
-Proposition of a new architecture looks as follows:
-
-![Architecture Diagram](doc/otasoft-core-new-architecture.png)
 ## Layers
 
 ### API Layer
@@ -107,14 +111,14 @@ Otasoft API built using [NestJS](https://nestjs.com/) acts as the API Layer for 
 
 PostgreSQL and MySQL are used as the databases and [TypeOrm](https://typeorm.io/) is used as the Object-Relational Mapper (ORM).
 
-<!-- CORE TEAM -->
-## Core Team
+<!-- CONTACT -->
+## Contact
 
-[Jakub Andrzejewski](https://www.linkedin.com/in/jakub-andrzejewski/) -> Founder, Developer
+Founder -> [Jakub Andrzejewski](https://www.linkedin.com/in/jakub-andrzejewski/)
 
-[Adam Oleszko](https://www.linkedin.com/in/adam-oleszko/) -> Core Team Member, Developer
+Core Team Member -> [Adam Oleszko](https://www.linkedin.com/in/adam-oleszko/)
 
-[Maciej Hnat](https://www.linkedin.com/in/maciej-hnat/) -> Core Team Member, Frontend Developer
+Core Team Member -> [Justyna Gieracka](https://www.linkedin.com/in/justyna-gieracka/)
 
 <!-- ROADMAP -->
 ## Roadmap
